@@ -5,7 +5,8 @@ export interface StyleFinderResponse {
     /** Job Id */
     id: number;
     done: boolean;
-    status: string;
+    status: Status;
+    /** Result data from parsing */
     results?: {
         error?: string;
         received?: string;
@@ -15,13 +16,19 @@ export interface StyleFinderResponse {
         };
         parsedData?: string;
     };
+    /** Completed parsing batches */
     completed_batches: number;
+    /** Total parsing batches */
     total_batches: number;
+    /** Php worker process id */
     process_id?: number;
+    /** Data created at */
     created_at: string;
+    /** Data updated at */
     updated_at: string;
 }
 
+/** The status options for the style finder job */
 export type Status = 
     | "pending"
     | "validating"
@@ -56,8 +63,11 @@ export class ResultData {
     }
 }
 
+/** Brand data including colors and fonts */
 export class BrandData {
+    /** Color Data */
     colors?: ColorData;
+    /** Font Data */
     fonts?: FontData;
 
     constructor(brandData: Record<string, any>) {
@@ -66,10 +76,24 @@ export class BrandData {
     }
 }
 
+/** 
+ * List of colors with the locations on the site they appear 
+ * @example 
+ * {
+ *    "#ffffff": ["heading", "background"]
+ * }
+ * */
 export interface ColorData {
     [color: string]: string[];
 }
 
+/** 
+ * List of fonts with the locations on the site they appear
+ * @example 
+ * {
+ *    "Arial": ["paragraph", "button"]
+ * }
+ * */
 export interface FontData {
     [font: string]: string[];
 }

@@ -199,6 +199,8 @@ const Loading = ({ withContent, currentSite = "", status = "validating", complet
     // Set status message
     let message = "";
     switch (status) {
+        default:
+            console.log("Uknown status:", status);
         case "pending":
             message = "Starting to find site content for";
             break;
@@ -220,9 +222,7 @@ const Loading = ({ withContent, currentSite = "", status = "validating", complet
         case "timeout":
             message = "Timeout finding site content for";
             break;
-        default:
-            message = "Uknown status";
-            break;
+
     }
     return <div id="loading-container" className="text-center">
         {<h3 className={"heading-gradient mb-4" + (withContent ? " mt-10" : "")}>{message} {currentSite} {status === "parsing" && (
