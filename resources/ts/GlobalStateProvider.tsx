@@ -28,6 +28,9 @@ type GlobalStateType = {
 
     totalBatches: number;
     setTotalBatches: React.Dispatch<React.SetStateAction<number>>;
+
+    testing: boolean;
+    setTesting: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
 // Create context
@@ -36,13 +39,19 @@ const GlobalStateContext = createContext<GlobalStateType | undefined>(undefined)
 export const GlobalStateProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const [input, setInput] = useState("");
     const [currentSite, setCurrentSite] = useState("");
+
     const [loading, setLoading] = useState(false);
     const [status, setStatus] = useState<Status>("pending");
+
     const [apiPid, setApiPid] = useState<number | null>(null);
     const [abortController, setAbortController] = useState<AbortController | null>(null);
+
     const [resData, setResData] = useState<ResultData | null>(null);
+
     const [completedBatches, setCompletedBatches] = useState(0);
     const [totalBatches, setTotalBatches] = useState(0);
+
+    const [testing, setTesting] = useState(true);
 
     return (
         <GlobalStateContext.Provider
@@ -55,7 +64,8 @@ export const GlobalStateProvider: React.FC<{ children: React.ReactNode }> = ({ c
                 abortController, setAbortController,
                 resData, setResData,
                 completedBatches, setCompletedBatches,
-                totalBatches, setTotalBatches
+                totalBatches, setTotalBatches,
+                testing, setTesting
             }}
         >
             {children}
