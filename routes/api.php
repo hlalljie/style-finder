@@ -2,6 +2,8 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\StyleFinderController;
+use App\Http\Controllers\TestController;
 
 /*
 |--------------------------------------------------------------------------
@@ -13,12 +15,12 @@ use Illuminate\Support\Facades\Route;
 | is assigned the "api" middleware group. Enjoy building your API!
 |
 */
-
-Route::post('find-styles', [App\Http\Controllers\StyleFinderController::class, 'index'])->name('styleFinder');
-Route::get('progress/{trackerId}', [App\Http\Controllers\StyleFinderController::class, 'checkProgress']);
-Route::get('stop/{processId}', [App\Http\Controllers\StyleFinderController::class, 'stop'])->name('stop');
+// Real Routes
+Route::post('find-styles', [StyleFinderController::class, 'index'])->name('styleFinder');
+Route::get('progress/{trackerId}', [StyleFinderController::class, 'checkProgress']);
+Route::get('stop/{processId}', [StyleFinderController::class, 'stop'])->name('stop');
 
 // Tests
-Route::post('test', [App\Http\Controllers\TestController::class, 'index'])->name('test');
-Route::get('/test/progress/{trackerId}', [App\Http\Controllers\TestController::class, 'checkProgress']);
-Route::get('test/stop/{processId}', [App\Http\Controllers\TestController::class, 'stop'])->name('stopTest');
+Route::post('test', [TestController::class, 'index'])->name('test');
+Route::get('/test/progress/{trackerId}', [TestController::class, 'checkProgress']);
+Route::get('test/stop/{processId}', [TestController::class, 'stop'])->name('stopTest');

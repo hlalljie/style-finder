@@ -41,7 +41,9 @@ interface FontData {
 
 const Home = (): JSX.Element => {
 
-    const testing = false;
+    // const testing = false;
+    const testing = true;
+
 
     const [input, setInput] = useState("");
     const [currentSite, setCurrentSite] = useState("");

@@ -111,6 +111,7 @@ class StyleFinderController extends Controller
         return $combined;
     }
 
+
     public function index(Request $request)
     {
         Log::info('Creating db tracker');
