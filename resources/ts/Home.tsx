@@ -1,43 +1,11 @@
+// External Imports
 import { JSX, useState } from "react";
 import chroma from 'chroma-js';
 import { Loader2, Square } from 'lucide-react'
 
+//Internal Imports
+import { StyleFinderResponse, Status, ResultData, BrandData, ColorData, FontData } from "./types";
 
-class ResultData {
-    error?: Error;
-    received?: string;
-    processId?: number;
-    brandData?: BrandData;
-    parsedData?: string;
-
-
-    constructor(resData: any) {
-        resData.error && (this.error = resData.error);
-        resData.received && (this.received = resData.received);
-        resData.processId && (this.processId = resData.processId);
-        resData.brandData &&
-            (this.brandData = new BrandData(resData.brandData));
-        resData.parsedData && (this.parsedData = resData.parsedData);
-    }
-}
-
-class BrandData {
-    colors?: ColorData;
-    fonts?: FontData;
-
-    constructor(brandData: Record<string, any>) {
-        brandData.colors && (this.colors = brandData.colors as ColorData);
-        brandData.fonts && (this.fonts = brandData.fonts as FontData);
-    }
-}
-
-interface ColorData {
-    [color: string]: string[];
-}
-
-interface FontData {
-    [font: string]: string[];
-}
 
 const Home = (): JSX.Element => {
 
@@ -48,8 +16,8 @@ const Home = (): JSX.Element => {
     const [input, setInput] = useState("");
     const [currentSite, setCurrentSite] = useState("");
     const [loading, setLoading] = useState(false);
-    const [status, setStatus] = useState("");
-    const [apiPid, setApiPid]: [number | null, React.Dispatch<React.SetStateAction<null>> | React.Dispatch<React.SetStateAction<number>>] = useState(null);
+    const [status, setStatus] = useState<Status>("pending");
+    const [apiPid, setApiPid] = useState<number | null>(null);
     const [abortController, setAbortController] = useState<AbortController | null>(null);
 
     const [resData, setResData] = useState(null);
@@ -63,7 +31,7 @@ const Home = (): JSX.Element => {
 
         const tempInput = input;
         setCurrentSite(tempInput);
-        setStatus("");
+        setStatus("pending");
         setLoading(true);
         setInput("");
         fetch(fetchAddress, {
@@ -107,11 +75,14 @@ const Home = (): JSX.Element => {
                 },
                 signal: newController.signal
             })
-                .then((res) => res.json())
-                .then((data) => {
+                .then((response) => response.json())
+                .then((result) => {
                     // TODO: add option to timeout
                     // Wait for request to finish
                     // Check if done
+
+                    // Typecast data
+                    const data = result as StyleFinderResponse;
                     if (data.done) {
                         setLoading(false);
                         setStatus("done"); // do explicitly so no race condition with cancellation
@@ -132,13 +103,13 @@ const Home = (): JSX.Element => {
                                 console.log("Results updated:", data);
                             }
                             //
-                            if (data.process_id !== apiPid) {
+                            if (data.process_id !== undefined && data.process_id !== apiPid) {
                                 setApiPid(data.process_id);
                                 console.log("API PID updated:", data);
                             }
                             // check if status has changed
                             if (data.status !== status) {
-                                setStatus(data.status);
+                                setStatus(data.status as Status);
                                 console.log("Status updated:", data);
                             }
                             // check if batches have changed
@@ -236,7 +207,7 @@ const Loading = ({ withContent, currentSite = "", status = "validating", complet
         message = "Parsing site content for";
     }
     else if (status === "done") {
-        message = "Completed finding site contnent for"
+        message = "Completed finding site content for"
     }
     else if (status === "error") {
         message = "Error finding site content for"
