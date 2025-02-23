@@ -195,28 +195,34 @@ const Home = (): JSX.Element => {
     );
 };
 
-const Loading = ({ withContent, currentSite = "", status = "validating", completedBatches = 0, totalBatches = 0 }: { handleStop: () => void, withContent?: boolean, currentSite?: string, status?: string, completedBatches?: number, totalBatches?: number }): JSX.Element => {
+const Loading = ({ withContent, currentSite = "", status = "validating", completedBatches = 0, totalBatches = 0 }: { handleStop: () => void, withContent?: boolean, currentSite?: string, status?: Status, completedBatches?: number, totalBatches?: number }): JSX.Element => {
+    // Set status message
     let message = "";
-    if (status === "validating") {
-        message = "Validating";
-    }
-    else if (status === "scraping") {
-        message = "Scraping site content for";
-    }
-    else if (status === "parsing") {
-        message = "Parsing site content for";
-    }
-    else if (status === "done") {
-        message = "Completed finding site content for"
-    }
-    else if (status === "error") {
-        message = "Error finding site content for"
-    }
-    else if (status === "timeout") {
-        message = "Timeout finding site content for"
-    }
-    else {
-        message = "Starting to find site content for";
+    switch (status) {
+        case "pending":
+            message = "Starting to find site content for";
+            break;
+        case "validating":
+            message = "Validating";
+            break;
+        case "scraping":
+            message = "Scraping site content for";
+            break;
+        case "parsing":
+            message = "Parsing site content for";
+            break;
+        case "done":
+            message = "Completed finding site content for";
+            break;
+        case "error":
+            message = "Error finding site content for";
+            break;
+        case "timeout":
+            message = "Timeout finding site content for";
+            break;
+        default:
+            message = "Uknown status";
+            break;
     }
     return <div id="loading-container" className="text-center">
         {<h3 className={"heading-gradient mb-4" + (withContent ? " mt-10" : "")}>{message} {currentSite} {status === "parsing" && (
