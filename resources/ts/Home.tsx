@@ -20,9 +20,10 @@ const Home = (): JSX.Element => {
     const [apiPid, setApiPid] = useState<number | null>(null);
     const [abortController, setAbortController] = useState<AbortController | null>(null);
 
-    const [resData, setResData] = useState(null);
+    const [resData, setResData] = useState<ResultData | null>(null);
     const [completedBatches, setCompletedBatches] = useState(0);
     const [totalBatches, setTotalBatches] = useState(0);
+
 
     const handleSearch = () => {
         const apiAddress = "/api/find-styles";
@@ -90,7 +91,7 @@ const Home = (): JSX.Element => {
                         // If there are results display them
                         if (data.results) {
                             console.log("Results complete:", data);
-                            setResData(new ResultData(data.results) as React.SetStateAction<null>);
+                            setResData(new ResultData(data.results));
                         }
                         setAbortController(null);
 
@@ -99,7 +100,7 @@ const Home = (): JSX.Element => {
                             lastUpdate = data.updated_at;
                             // Schedule next poll if not done
                             if (data.results) {
-                                setResData(new ResultData(data.results) as React.SetStateAction<null>);
+                                setResData(new ResultData(data.results));
                                 console.log("Results updated:", data);
                             }
                             //

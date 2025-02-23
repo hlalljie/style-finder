@@ -1,9 +1,12 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
 import App from "./App.tsx";
+import { GlobalStateProvider } from "./GlobalStateProvider.tsx";
 
 ReactDOM.createRoot(document.getElementById("app")!).render(
     <React.StrictMode>
-        <App />
+        <GlobalStateProvider>
+            <App />
+        </GlobalStateProvider>
     </React.StrictMode>
 );
