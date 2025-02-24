@@ -1,19 +1,17 @@
 // External Imports
-import { JSX, useState } from "react";
+import { JSX } from "react";
 import chroma from 'chroma-js';
 import { Loader2, Square } from 'lucide-react'
 
 //Internal Imports
-import { GlobalStateProvider, useGlobalState } from "@/GlobalStateProvider";
-import { StyleFinderResponse, Status, ResultData, BrandData, ColorData, FontData } from "./types";
+import { useGlobalState } from "@/GlobalStateProvider";
+import { ColorData, FontData } from "./types";
 import { useSearch } from "@/hooks/useSearch";
 
 
 const Home = (): JSX.Element => {
 
-    const { resData, loading, status, currentSite, completedBatches, totalBatches, apiPid, input, setInput } = useGlobalState();
-
-    const { handleSearch, pollForUpdates, handleStop } = useSearch()
+    const { resData, loading, apiPid } = useGlobalState();
 
     return (
         <div id='main' className="background-gradient animate-gradient-x-slow relative h-screen grid grid-rows-[auto_1fr_auto]" >
@@ -23,25 +21,28 @@ const Home = (): JSX.Element => {
             {(!resData) ?
                 <section id='content-container' className="max-w-md mt-[30vh]">
                     {
-                        loading ? <Loading handleStop={handleStop} currentSite={currentSite} status={status} completedBatches={completedBatches} totalBatches={totalBatches} /> :
+                        loading ? <Loading /> :
                             <h2 id="intro" className='text-center heading-gradient'>Search a website for its brand colors and fonts.</h2>
                     }
 
 
                 </section> :
                 <section id='content-container' className="pt-10 max-w-2xl w-full">
-                    {resData ? <ResultsDisplay resData={resData} loading={loading} /> : null}
-                    {loading && <Loading handleStop={handleStop} withContent currentSite={currentSite} status={status} completedBatches={completedBatches} totalBatches={totalBatches} />}
+                    {resData ? <ResultsDisplay /> : null}
+                    {loading && <Loading withContent />}
                 </section>
 
             }
-            {apiPid ? <StopButton handleStop={handleStop} /> : null}
-            <InputContainer input={input} setInput={setInput} handleSearch={handleSearch} />
+            {apiPid ? <StopButton /> : null}
+            <InputContainer />
         </div >
     );
 };
 
-const Loading = ({ withContent, currentSite = "", status = "validating", completedBatches = 0, totalBatches = 0 }: { handleStop: () => void, withContent?: boolean, currentSite?: string, status?: Status, completedBatches?: number, totalBatches?: number }): JSX.Element => {
+const Loading = ({ withContent }: { withContent?: boolean }): JSX.Element => {
+
+    const { currentSite, status, completedBatches, totalBatches } = useGlobalState();
+
     // Set status message
     let message = "";
     switch (status) {
@@ -98,13 +99,20 @@ const Loading = ({ withContent, currentSite = "", status = "validating", complet
     </div>;
 };
 
-const StopButton = ({ handleStop }: { handleStop: () => void }): JSX.Element => {
+const StopButton = (): JSX.Element => {
+
+    const { handleStop } = useSearch();
+
     return (
         <Square onClick={handleStop} className="cursor-pointer hover:text-red-500 transition-colors absolute p7 bottom-10 left-7" />
     );
 }
 
-const InputContainer = ({ input, setInput, handleSearch }: { input: string, setInput: React.Dispatch<React.SetStateAction<string>>, handleSearch: () => void }): JSX.Element => {
+const InputContainer = (): JSX.Element => {
+
+    const { input, setInput } = useGlobalState();
+    const { handleSearch } = useSearch();
+
     return (
         <section id='input-container' className="w-full ">
             <div id='input ' className="mx-auto w-screen p-7 flex justify-center">
@@ -125,14 +133,20 @@ const InputContainer = ({ input, setInput, handleSearch }: { input: string, setI
     )
 }
 
-const ResultsDisplay = ({ resData, loading }: { resData: ResultData, loading?: boolean }): JSX.Element => {
+const ResultsDisplay = (): JSX.Element => {
+
+    const { resData, loading } = useGlobalState();
+    if (!resData) {
+        return <></>;
+    }
+
     return (
         <div className="resultsDisplay">
             {resData.error ? (
                 !loading && (<ErrorDisplay error={resData.error}
                 />)
             ) : resData.brandData ? (
-                <DataDisplay resData={resData} />
+                <DataDisplay />
             ) : (
                 "No error and no data?!?"
             )}
@@ -148,13 +162,20 @@ const ErrorDisplay = ({ error }: { error: Error }): JSX.Element => {
     );
 };
 
-const DataDisplay = ({ resData }: { resData: ResultData }): JSX.Element => {
+const DataDisplay = (): JSX.Element => {
+
+    const { resData } = useGlobalState();
+
+    if (!resData) {
+        return <></>;
+    }
+
     return (
         <div id="data-display">
             <h3 className="text-center">Website Styles for {resData.received}</h3>
-            {resData.brandData!.colors ? (
+            {resData.brandData!.colors && (
                 <ColorDisplay colors={resData.brandData!.colors} />
-            ) : null}
+            )}
             {resData.brandData!.fonts ? (
                 <FontDisplay fonts={resData.brandData!.fonts} />
             ) : null}

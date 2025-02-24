@@ -14,6 +14,7 @@ export const useSearch = () => {
         setStatus("pending");
         setLoading(true);
         setInput("");
+
         fetch(fetchAddress, {
             method: "Post",
             headers: {
