@@ -10,6 +10,15 @@ export const useSearch = () => {
         const fetchAddress = testing ? testAddress : apiAddress;
 
         const tempInput = input;
+
+        const standardBody = { url: input }
+        const testBody = {
+            url: input,
+            testNumber: 0,
+            loadTime: 10
+        }
+        const body = testing ? testBody : standardBody
+
         setCurrentSite(tempInput);
         setStatus("pending");
         setLoading(true);
@@ -20,7 +29,7 @@ export const useSearch = () => {
             headers: {
                 "Content-Type": "application/json",
             },
-            body: JSON.stringify({ url: input, testNumber: 0, loadTime: 10 }),
+            body: JSON.stringify(body),
         })
             .then((res) => res.json())
             .then((data) => {
